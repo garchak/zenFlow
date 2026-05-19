@@ -129,19 +129,6 @@
     .loading{display:flex;align-items:center;justify-content:center;gap:8px;padding:20px;color:var(--t3);font-size:12px}
     .spin{width:14px;height:14px;border:1.5px solid var(--br);border-top-color:var(--sg);border-radius:50%;animation:sp .8s linear infinite}
     
-    /* Clase para ocultar el título visualmente pero mantenerlo accesible */
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
-    
     @keyframes sp{to{transform:rotate(360deg)}}
     ::-webkit-scrollbar{width:2px}::-webkit-scrollbar-thumb{background:var(--brh);border-radius:2px}
   </style>
@@ -413,7 +400,7 @@
     </div>
     <div class="hcard sg">
       <div class="htag">Recordatorio de movimiento</div>
-      <div class="htitle">Muevete cada 45 minutos</div>
+      <div class="htitle">Muevete cada 45 minutes</div>
       <div class="hsub">Levantate 30 segundos. Tu lumbar lo necesita durante el trabajo sedentario.</div>
       <button class="hbtn sg" id="mov-btn" onclick="toggleMovReminder()">Activar recordatorio</button>
     </div>
@@ -590,6 +577,7 @@ function toggleAlarm(btn,id){
   else{btn.classList.remove('on');btn.textContent='Activar alarma';showToast('Alarma desactivada','');}
 }
 
+// CHECK ALARMS
 function checkAlarms(){
   const n=new Date();
   const cur=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
