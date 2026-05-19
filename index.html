@@ -39,7 +39,8 @@
     .tli:last-child{border-bottom:none}
     .tlt{font-size:11px;color:var(--t3);min-width:40px;padding-top:3px}
     .tld{width:7px;height:7px;border-radius:50%;margin-top:4px;flex-shrink:0}
-    .tld.sg{background:var(--sg)}.tld.cl{background:var(--cl)}.tld.sk{background:var(--sk)}.tld.dim{background:var(--t3)}
+    .tld.sg{background:var(--sg)}.tld.cl覆{background:var(--cl)}.tld.sk{background:var(--sk)}.tld.dim{background:var(--t3)}
+    .tld.cl{background:var(--cl)}
     .tlb{flex:1}
     .tln{font-size:13px;font-weight:500;margin-bottom:2px;color:var(--t1)}
     .tls{font-size:11px;color:var(--t2);line-height:1.4}
@@ -127,13 +128,27 @@
     .abdismiss{position:absolute;top:12px;right:14px;background:none;border:none;cursor:pointer;color:var(--t3);font-size:18px}
     .loading{display:flex;align-items:center;justify-content:center;gap:8px;padding:20px;color:var(--t3);font-size:12px}
     .spin{width:14px;height:14px;border:1.5px solid var(--br);border-top-color:var(--sg);border-radius:50%;animation:sp .8s linear infinite}
+    
+    /* Clase para ocultar el título visualmente pero mantenerlo accesible */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    
     @keyframes sp{to{transform:rotate(360deg)}}
     ::-webkit-scrollbar{width:2px}::-webkit-scrollbar-thumb{background:var(--brh);border-radius:2px}
   </style>
 </head>
 <body>
 
-<h2 class="sr-only">ZenFlow - Aplicacion de bienestar diario con modulos de viaje, nutricion y hogar</h2>
+<h1 class="sr-only">ZenFlow - Aplicación de bienestar diario</h1>
 
 <div id="app">
 
