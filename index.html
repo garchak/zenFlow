@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZenFlow</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <style>
+    :root{
+      --b0:#121009;--b1:#1C1916;--b2:#252118;--b3:#2E2A22;
+      --t1:#EDE7DC;--t2:#9E9288;--t3:#625D58;
+      --sg:#7C9E7A;--sgd:#2A4A28;--cl:#B8946A;--cld:#5A3A18;
+      --sk:#6A9AB8;--skd:#1A4A68;
+      --br:rgba(255,255,255,0.07);--brh:rgba(255,255,255,0.13);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    #app{max-width:390px;margin:0 auto;background:var(--b0);min-height:720px;color:var(--t1);border-radius:16px;overflow:hidden;position:relative;font-family:var(--font-sans,-apple-system,'Helvetica Neue',sans-serif);font-size:14px}
+    .scr{display:none;flex-direction:column;min-height:720px}.scr.on{display:flex}
+    .topbar{background:var(--b1);border-bottom:0.5px solid var(--br);padding:13px 18px 11px;display:flex;align-items:center;justify-content:space-between}
+    .logo{font-size:17px;font-weight:500}.logo span{color:var(--cl)}
+    .greeting{font-size:10px;color:var(--t3);margin-top:2px}
+    .back-btn{background:none;border:none;cursor:pointer;color:var(--t2);display:flex;align-items:center;gap:5px;font-size:13px;font-family:inherit}
+    .page-title{font-size:15px;font-weight:500;color:var(--t1)}
+    .content{flex:1;padding:14px 16px;overflow-y:auto}
+    .bnav{background:var(--b1);border-top:0.5px solid var(--br);display:flex;padding:8px 0 14px}
+    .nbtn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;padding:5px 0;color:var(--t3);font-size:10px;font-family:inherit}
+    .nbtn i{font-size:20px}.nbtn.on{color:var(--sg)}
+    .card{background:var(--b1);border:0.5px solid var(--br);border-radius:14px;margin-bottom:12px}
+    .cp{padding:14px 16px}
+    .slbl{font-size:11px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;margin:14px 0 8px;display:flex;align-items:center;gap:6px}
+    .slbl i{font-size:13px}
+    .clock-t{font-size:38px;font-weight:200;letter-spacing:3px;color:var(--t1);text-align:right;line-height:1}
+    .clock-d{font-size:10px;color:var(--t3);text-align:right;margin-top:3px}
+    .erow{display:flex;gap:7px;margin-top:8px}
+    .ebtn{flex:1;padding:9px 4px;border-radius:10px;border:0.5px solid var(--brh);background:var(--b2);font-size:12px;cursor:pointer;color:var(--t2);font-family:inherit;text-align:center;transition:all .15s}
+    .ebtn.on{background:var(--sgd);border-color:var(--sg);color:#C8E8C6}
+    .tli{display:flex;gap:10px;padding:11px 16px;border-bottom:0.5px solid var(--br);align-items:flex-start}
+    .tli:last-child{border-bottom:none}
+    .tlt{font-size:11px;color:var(--t3);min-width:40px;padding-top:3px}
+    .tld{width:7px;height:7px;border-radius:50%;margin-top:4px;flex-shrink:0}
+    .tld.sg{background:var(--sg)}.tld.cl{background:var(--cl)}.tld.sk{background:var(--sk)}.tld.dim{background:var(--t3)}
+    .tlb{flex:1}
+    .tln{font-size:13px;font-weight:500;margin-bottom:2px;color:var(--t1)}
+    .tls{font-size:11px;color:var(--t2);line-height:1.4}
+    .alarmbtn{background:none;border:0.5px solid var(--br);border-radius:6px;padding:3px 8px;cursor:pointer;font-size:10px;color:var(--t3);font-family:inherit;transition:all .15s;margin-top:5px;display:inline-block}
+    .alarmbtn.on{background:var(--sgd);border-color:var(--sg);color:#C8E8C6}
+    .pill{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;margin-top:4px;margin-right:3px}
+    .pill.mv{background:var(--sgd);color:#C8E8C6}.pill.fd{background:var(--cld);color:#E8C8A0}.pill.rs{background:var(--skd);color:#A8D0E8}
+    .mcard{background:var(--b1);border:0.5px solid var(--br);border-radius:14px;padding:14px 16px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:12px}
+    .mcard:active{background:var(--b2)}
+    .mico{width:38px;height:38px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px}
+    .mico.sg{background:var(--sgd);color:var(--sg)}.mico.cl{background:var(--cld);color:var(--cl)}.mico.sk{background:var(--skd);color:var(--sk)}
+    .hcard{border-radius:14px;padding:14px 16px;margin-bottom:12px}
+    .hcard.sg{background:var(--sgd);border:0.5px solid var(--sg)}.hcard.cl{background:var(--cld);border:0.5px solid var(--cl)}.hcard.sk{background:var(--skd);border:0.5px solid var(--sk)}
+    .htag{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.5px;opacity:.7;margin-bottom:4px}
+    .htitle{font-size:14px;font-weight:500;margin-bottom:3px}
+    .hsub{font-size:12px;opacity:.8;line-height:1.5}
+    .hbtn{margin-top:10px;padding:7px 16px;border-radius:20px;border:none;font-size:12px;cursor:pointer;font-family:inherit;font-weight:500}
+    .hbtn.sg{background:var(--sg);color:#081408}.hbtn.cl{background:var(--cl);color:#1A0800}
+    .tring{width:84px;height:84px;margin:0 auto 10px;position:relative;display:none}
+    .tring svg{transform:rotate(-90deg)}
+    .tring circle{fill:none;stroke-width:4}
+    .tring .trb{stroke:var(--brh)}.tring .trf{stroke:var(--sg);stroke-linecap:round;transition:stroke-dashoffset 1s linear}
+    .trnum{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:24px;font-weight:200;color:var(--t1)}
+    .flbl{font-size:11px;color:var(--t3);margin-bottom:5px}
+    .finput{width:100%;padding:9px 12px;border-radius:10px;border:0.5px solid var(--brh);background:var(--b2);color:var(--t1);font-size:13px;font-family:inherit;outline:none;margin-bottom:12px}
+    .finput:focus{border-color:var(--sg)}
+    .fbtn{width:100%;padding:11px;border-radius:10px;background:var(--sg);border:none;color:#081408;font-size:13px;cursor:pointer;font-weight:500;font-family:inherit}
+    .srow{display:flex;gap:8px;margin-bottom:10px}
+    .sblk{flex:1;background:var(--b2);border-radius:10px;padding:10px;text-align:center;border:0.5px solid var(--br)}
+    .sval{font-size:20px;font-weight:400;color:var(--t1)}.slb{font-size:10px;color:var(--t3);margin-top:2px}
+    .mrow{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:0.5px solid var(--br)}
+    .mrow:last-child{border-bottom:none}
+    .memoji{font-size:22px;width:30px;text-align:center}
+    .mbody{flex:1}.mname{font-size:13px;font-weight:500;color:var(--t1)}.mtime{font-size:11px;color:var(--t2)}
+    .mkcal{font-size:11px;color:var(--t3);white-space:nowrap}
+    .shcat{padding:8px 14px;background:var(--b2);font-size:11px;font-weight:500;color:var(--t3);border-bottom:0.5px solid var(--br);text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:5px}
+    .shi{display:flex;align-items:center;gap:9px;padding:9px 14px;border-bottom:0.5px solid var(--br);cursor:pointer;font-size:13px;color:var(--t1);transition:opacity .2s}
+    .shi:last-child{border-bottom:none}
+    .shi.done{opacity:.35}
+    .shi.done .shitext{text-decoration:line-through}
+    .shcb{width:16px;height:16px;border-radius:4px;flex-shrink:0;border:0.5px solid var(--brh);display:flex;align-items:center;justify-content:center;transition:all .15s}
+    .shi.done .shcb{background:var(--sg);border-color:var(--sg)}
+    .shcb i{font-size:10px;color:#081408;display:none}
+    .shi.done .shcb i{display:block}
+    .shq{font-size:11px;color:var(--t3);margin-left:auto}
+    .tri{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-bottom:0.5px solid var(--br);cursor:pointer}
+    .tri:last-child{border-bottom:none}
+    .tricb{width:18px;height:18px;border-radius:5px;margin-top:1px;flex-shrink:0;border:0.5px solid var(--brh);display:flex;align-items:center;justify-content:center;transition:all .15s}
+    .tri.done .tricb{background:var(--sg);border-color:var(--sg)}
+    .tricb i{font-size:12px;color:#081408;display:none}
+    .tri.done .tricb i{display:flex}
+    .tribody{flex:1}
+    .triname{font-size:13px;color:var(--t1);transition:all .15s}
+    .tri.done .triname{text-decoration:line-through;color:var(--t3)}
+    .trihint{font-size:11px;color:var(--t2);margin-top:3px;line-height:1.4}
+    .tritag{font-size:10px;padding:2px 7px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+    .tritag.a{background:rgba(106,154,184,.2);color:var(--sk)}.tritag.h{background:rgba(184,148,106,.2);color:var(--cl)}
+    .slrow{display:flex;gap:7px}
+    .slblk{flex:1;background:var(--b2);border-radius:10px;padding:10px;text-align:center;border:0.5px solid var(--br)}
+    .slval{font-size:18px;font-weight:400;color:var(--sk)}.sllbl{font-size:10px;color:var(--t3);margin-top:2px}
+    .nwi{padding:11px 14px;border-bottom:0.5px solid var(--br);cursor:pointer;transition:background .1s}
+    .nwi:last-child{border-bottom:none}
+    .nwi:hover{background:var(--b2)}
+    .nwcat{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.6px;margin-bottom:3px}
+    .nwcat.politica{color:var(--cl)}.nwcat.economia{color:var(--sg)}.nwcat.sociedad{color:var(--sk)}.nwcat.deporte{color:#B090C0}.nwcat.cultura{color:#9A8040}
+    .nwtit{font-size:13px;font-weight:500;margin-bottom:3px;line-height:1.4;color:var(--t1)}
+    .nwsum{font-size:11px;color:var(--t2);line-height:1.5}
+    .podi{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:0.5px solid var(--br)}
+    .podi:last-child{border-bottom:none}
+    .podico{width:42px;height:42px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px}
+    .podname{font-size:13px;font-weight:500;color:var(--t1)}.podsub{font-size:11px;color:var(--t2);margin-top:2px}
+    .podplay{width:32px;height:32px;border-radius:50%;flex-shrink:0;background:var(--sg);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#081408;font-size:14px}
+    .aplayer{background:var(--b2);border-radius:14px;padding:12px 16px;margin-bottom:12px;border:0.5px solid var(--brh);display:flex;align-items:center;gap:12px}
+    .aptitle{flex:1}
+    .apname{font-size:13px;font-weight:500;color:var(--t1)}.apstate{font-size:11px;color:var(--t2);margin-top:2px}
+    .apbtn{width:40px;height:40px;border-radius:50%;background:var(--sg);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#081408;font-size:18px;flex-shrink:0}
+    .toast{position:fixed;bottom:82px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--b3);border:0.5px solid var(--brh);border-radius:14px;padding:11px 15px;max-width:340px;width:calc(100% - 32px);opacity:0;transition:all .22s;pointer-events:none;z-index:999}
+    .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+    .tt{font-size:13px;font-weight:500;margin-bottom:2px;color:var(--t1)}.tb{font-size:11px;color:var(--t2)}
+    .abanner{position:fixed;top:0;left:50%;transform:translateX(-50%);background:var(--b1);border:0.5px solid var(--sg);border-top:none;border-radius:0 0 16px 16px;padding:14px 18px;max-width:390px;width:100%;z-index:1000;display:none}
+    .abanner.on{display:block}
+    .ablabel{font-size:10px;color:var(--sg);font-weight:500;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+    .abtitle{font-size:15px;font-weight:500;color:var(--t1);margin-bottom:2px}
+    .absub{font-size:12px;color:var(--t2)}
+    .abdismiss{position:absolute;top:12px;right:14px;background:none;border:none;cursor:pointer;color:var(--t3);font-size:18px}
+    .loading{display:flex;align-items:center;justify-content:center;gap:8px;padding:20px;color:var(--t3);font-size:12px}
+    .spin{width:14px;height:14px;border:1.5px solid var(--br);border-top-color:var(--sg);border-radius:50%;animation:sp .8s linear infinite}
+    @keyframes sp{to{transform:rotate(360deg)}}
+    ::-webkit-scrollbar{width:2px}::-webkit-scrollbar-thumb{background:var(--brh);border-radius:2px}
+  </style>
+</head>
+<body>
+
+<h2 class="sr-only">ZenFlow - Aplicacion de bienestar diario con modulos de viaje, nutricion y hogar</h2>
+
+<div id="app">
+
+<div class="scr on" id="s-main">
+  <div class="topbar">
+    <div>
+      <div class="logo">Zen<span>Flow</span></div>
+      <div class="greeting" id="greeting">Cargando...</div>
+    </div>
+    <div>
+      <div class="clock-t" id="clock">--:--</div>
+      <div class="clock-d" id="clock-d">--</div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="card cp" style="margin-bottom:12px">
+      <div style="font-size:12px;color:var(--t3)">Como te sientes hoy</div>
+      <div class="erow">
+        <button class="ebtn" onclick="setEnergy(this,'bajo')">Bajo</button>
+        <button class="ebtn on" onclick="setEnergy(this,'medio')">Medio</button>
+        <button class="ebtn" onclick="setEnergy(this,'alto')">Alto</button>
+      </div>
+    </div>
+    <div class="slbl"><i class="ti ti-calendar" aria-hidden="true"></i>Tu dia de hoy</div>
+    <div class="card">
+      <div class="tli">
+        <div class="tlt">07:45</div><div class="tld sg"></div>
+        <div class="tlb"><div class="tln">Inicio del viaje</div><div class="tls">Salida configurada</div>
+        <span class="pill mv">Estiramiento 30 seg</span><br>
+        <button class="alarmbtn on" onclick="toggleAlarm(this,'depart')">Alarma activa</button></div>
+      </div>
+      <div class="tli">
+        <div class="tlt">09:00</div><div class="tld cl"></div>
+        <div class="tlb"><div class="tln">Desayuno</div><div class="tls">Avena con platano y nueces</div>
+        <span class="pill fd">~420 kcal</span><br>
+        <button class="alarmbtn" onclick="toggleAlarm(this,'breakfast')">Activar alarma</button></div>
+      </div>
+      <div class="tli">
+        <div class="tlt">12:30</div><div class="tld cl"></div>
+        <div class="tlb"><div class="tln">Comida</div><div class="tls">Pechuga con arroz y verduras</div>
+        <span class="pill fd">~600 kcal</span><br>
+        <button class="alarmbtn on" onclick="toggleAlarm(this,'lunch')">Alarma activa</button></div>
+      </div>
+      <div class="tli">
+        <div class="tlt">15:45</div><div class="tld sg"></div>
+        <div class="tlb"><div class="tln">Regreso y snack</div><div class="tls">Pausa activa al llegar</div>
+        <span class="pill mv">Lumbar</span><br>
+        <button class="alarmbtn" onclick="toggleAlarm(this,'snack')">Activar alarma</button></div>
+      </div>
+      <div class="tli">
+        <div class="tlt">16:45</div><div class="tld sk"></div>
+        <div class="tlb"><div class="tln">Ventana libre 30 min</div><div class="tls">Ideal para limpieza ligera</div>
+        <span class="pill rs">Hogar</span><br>
+        <button class="alarmbtn" onclick="toggleAlarm(this,'tasks')">Activar alarma</button></div>
+      </div>
+      <div class="tli">
+        <div class="tlt">20:45</div><div class="tld dim"></div>
+        <div class="tlb"><div class="tln">Rutina nocturna</div><div class="tls">Desconexion progresiva</div>
+        <span class="pill rs">Descanso</span><br>
+        <button class="alarmbtn on" onclick="toggleAlarm(this,'night')">Alarma activa</button></div>
+      </div>
+      <div class="tli">
+        <div class="tlt">22:30</div><div class="tld dim"></div>
+        <div class="tlb"><div class="tln">Hora de dormir</div><div class="tls">Sin pantallas ni dispositivos</div>
+        <br><button class="alarmbtn on" onclick="toggleAlarm(this,'sleep')">Alarma activa</button></div>
+      </div>
+    </div>
+    <div class="slbl"><i class="ti ti-layout-grid" aria-hidden="true"></i>Modulos</div>
+    <div class="mcard" onclick="goTo('commute')">
+      <div class="mico sg"><i class="ti ti-route" aria-hidden="true"></i></div>
+      <div style="flex:1"><div class="tln">Viaje</div><div style="font-size:11px;color:var(--t2);margin-top:2px">Desplazamiento y estiramientos</div></div>
+      <i class="ti ti-chevron-right" style="color:var(--t3)" aria-hidden="true"></i>
+    </div>
+    <div class="mcard" onclick="goTo('nutrition')">
+      <div class="mico cl"><i class="ti ti-salad" aria-hidden="true"></i></div>
+      <div style="flex:1"><div class="tln">Nutricion</div><div style="font-size:11px;color:var(--t2);margin-top:2px">Menu diario y lista de compra</div></div>
+      <i class="ti ti-chevron-right" style="color:var(--t3)" aria-hidden="true"></i>
+    </div>
+    <div class="mcard" onclick="goTo('home')">
+      <div class="mico sk"><i class="ti ti-home" aria-hidden="true"></i></div>
+      <div style="flex:1"><div class="tln">Hogar</div><div style="font-size:11px;color:var(--t2);margin-top:2px">Tareas y descanso</div></div>
+      <i class="ti ti-chevron-right" style="color:var(--t3)" aria-hidden="true"></i>
+    </div>
+    <div style="height:8px"></div>
+  </div>
+  <div class="bnav">
+    <button class="nbtn on" onclick="goTo('main')"><i class="ti ti-home" aria-hidden="true"></i>Inicio</button>
+    <button class="nbtn" onclick="goTo('commute')"><i class="ti ti-route" aria-hidden="true"></i>Viaje</button>
+    <button class="nbtn" onclick="goTo('nutrition')"><i class="ti ti-salad" aria-hidden="true"></i>Nutricion</button>
+    <button class="nbtn" onclick="goTo('home')"><i class="ti ti-armchair" aria-hidden="true"></i>Hogar</button>
+  </div>
+</div>
+
+<div class="scr" id="s-commute">
+  <div class="topbar">
+    <button class="back-btn" onclick="goTo('main')"><i class="ti ti-arrow-left" aria-hidden="true"></i>Volver</button>
+    <div class="page-title">Viaje</div>
+    <div style="width:60px"></div>
+  </div>
+  <div class="content">
+    <div class="card cp" style="margin-bottom:12px">
+      <div class="flbl">Hora de salida</div>
+      <input class="finput" type="time" value="07:45" id="depart-time">
+      <div class="flbl">Destino</div>
+      <input class="finput" type="text" value="Oficina Central" id="dest-input" placeholder="Tu destino">
+      <button class="fbtn" onclick="calcTravel()">Calcular viaje</button>
+    </div>
+    <div id="travel-result" style="display:none;margin-bottom:12px">
+      <div class="srow">
+        <div class="sblk"><div class="sval" id="tr-min">--</div><div class="slb">min estimado</div></div>
+        <div class="sblk"><div class="sval" id="tr-km">--</div><div class="slb">km aprox</div></div>
+        <div class="sblk"><div class="sval" id="tr-arr">--</div><div class="slb">llegada</div></div>
+      </div>
+      <div style="font-size:11px;color:var(--t3);padding:6px 0 2px">Calculo local sin servidor</div>
+    </div>
+    <div class="hcard cl">
+      <div class="htag">Pausa activa lumbar</div>
+      <div class="htitle" id="stretch-title">Inclinacion lateral suave</div>
+      <div class="hsub">Inclina el tronco a cada lado, 3 repeticiones. Para la zona lumbar.</div>
+      <div class="tring" id="tring">
+        <svg width="84" height="84" viewBox="0 0 84 84">
+          <circle class="trb" cx="42" cy="42" r="38" stroke-dasharray="239" stroke-dashoffset="0"/>
+          <circle class="trf" id="ring-fg" cx="42" cy="42" r="38" stroke-dasharray="239" stroke-dashoffset="0"/>
+        </svg>
+        <div class="trnum" id="ring-num">30</div>
+      </div>
+      <button class="hbtn cl" id="stretch-btn" onclick="startStretch()">Iniciar 30 seg</button>
+    </div>
+    <div class="slbl"><i class="ti ti-music" aria-hidden="true"></i>Sonido para el trayecto</div>
+    <div class="aplayer">
+      <div class="aptitle">
+        <div class="apname">Meditacion de transito</div>
+        <div class="apstate" id="amb-state">Drone ambiental sintetizado en local</div>
+      </div>
+      <button class="apbtn" id="amb-btn" onclick="toggleAmbient()" aria-label="Reproducir sonido ambiental">
+        <i class="ti ti-player-play" id="amb-icon" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div class="slbl"><i class="ti ti-headphones" aria-hidden="true"></i>Podcasts sugeridos</div>
+    <div class="card">
+      <div class="podi">
+        <div class="podico" style="background:rgba(122,158,120,.2)">🧠</div>
+        <div style="flex:1"><div class="podname">Entiende Tu Mente</div><div class="podsub">Psicologia practica · 20-30 min</div></div>
+        <button class="podplay" onclick="openPod('https://www.ivoox.com/podcast-entiende-tu-mente_sq_f1303986_1.html')" aria-label="Abrir podcast"><i class="ti ti-external-link" style="font-size:14px" aria-hidden="true"></i></button>
+      </div>
+      <div class="podi">
+        <div class="podico" style="background:rgba(184,148,106,.2)">🌅</div>
+        <div style="flex:1"><div class="podname">Crecimiento Personal</div><div class="podsub">Bienestar y habitos · 15-20 min</div></div>
+        <button class="podplay" onclick="openPod('https://www.ivoox.com/podcast-crecimiento-personal-con-mario-de-marcos_sq_f1143696_1.html')" aria-label="Abrir podcast"><i class="ti ti-external-link" style="font-size:14px" aria-hidden="true"></i></button>
+      </div>
+      <div class="podi">
+        <div class="podico" style="background:rgba(106,154,184,.2)">🎙</div>
+        <div style="flex:1"><div class="podname">Estoicismo en la Vida</div><div class="podsub">Filosofia practica · 10-15 min</div></div>
+        <button class="podplay" onclick="openPod('https://open.spotify.com/show/6ATt4JIzMFqkEPORtGXyGY')" aria-label="Abrir podcast"><i class="ti ti-external-link" style="font-size:14px" aria-hidden="true"></i></button>
+      </div>
+    </div>
+    <div class="slbl"><i class="ti ti-news" aria-hidden="true"></i>Noticias breves de hoy</div>
+    <div class="card" id="news-container">
+      <div class="loading"><div class="spin"></div>Buscando noticias...</div>
+    </div>
+    <div style="height:8px"></div>
+  </div>
+  <div class="bnav">
+    <button class="nbtn" onclick="goTo('main')"><i class="ti ti-home" aria-hidden="true"></i>Inicio</button>
+    <button class="nbtn on" onclick="goTo('commute')"><i class="ti ti-route" aria-hidden="true"></i>Viaje</button>
+    <button class="nbtn" onclick="goTo('nutrition')"><i class="ti ti-salad" aria-hidden="true"></i>Nutricion</button>
+    <button class="nbtn" onclick="goTo('home')"><i class="ti ti-armchair" aria-hidden="true"></i>Hogar</button>
+  </div>
+</div>
+
+<div class="scr" id="s-nutrition">
+  <div class="topbar">
+    <button class="back-btn" onclick="goTo('main')"><i class="ti ti-arrow-left" aria-hidden="true"></i>Volver</button>
+    <div class="page-title">Nutricion</div>
+    <div style="width:60px"></div>
+  </div>
+  <div class="content">
+    <div class="card cp" style="margin-bottom:12px">
+      <div style="font-size:12px;color:var(--t3)">Nivel de energia hoy</div>
+      <div class="erow">
+        <button class="ebtn" onclick="setEnergy(this,'bajo')">Bajo</button>
+        <button class="ebtn on" onclick="setEnergy(this,'medio')">Medio</button>
+        <button class="ebtn" onclick="setEnergy(this,'alto')">Alto</button>
+      </div>
+    </div>
+    <div class="slbl"><i class="ti ti-clock" aria-hidden="true"></i>Menu de hoy</div>
+    <div class="card">
+      <div class="mrow"><div class="memoji">🥣</div><div class="mbody"><div class="mname">Avena con platano y nueces</div><div class="mtime">Desayuno · 07:15</div></div><div class="mkcal">~420 kcal</div></div>
+      <div class="mrow"><div class="memoji">🍗</div><div class="mbody"><div class="mname">Pechuga con arroz integral y brocoli</div><div class="mtime">Comida · 12:30</div></div><div class="mkcal">~610 kcal</div></div>
+      <div class="mrow"><div class="memoji">🍎</div><div class="mbody"><div class="mname">Manzana con mantequilla de almendra</div><div class="mtime">Snack · 16:00</div></div><div class="mkcal">~220 kcal</div></div>
+    </div>
+    <div style="background:rgba(106,154,184,.1);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--sk);display:flex;align-items:center;gap:8px">
+      <i class="ti ti-droplet" style="font-size:16px" aria-hidden="true"></i>Bebe agua antes de cada comida. Al menos 1.5 L hoy.
+    </div>
+    <div class="slbl"><i class="ti ti-shopping-cart" aria-hidden="true"></i>Lista de compra semanal</div>
+    <div style="font-size:12px;color:var(--t2);margin-bottom:10px">Batching automatico · Mejor dia: <strong style="color:var(--t1)">Sabado 11:00</strong></div>
+    <div class="card">
+      <div class="shcat"><i class="ti ti-plant-2" style="font-size:13px" aria-hidden="true"></i>Frutas y verduras</div>
+      <div class="shi" onclick="toggleShop(this)"><div class="shcb"><i class="ti ti-check" aria-hidden="true"></i></div><span class="shitext">Platanos</span><span class="shq">x6</span></div>
+      <div class="shi" onclick="toggleShop(this)"><div class="shcb"><i class="ti ti-check" aria-hidden="true"></i></div><span class="shitext">Brocoli</span><span class="shq">x2 bolsas</span></div>
+      <div class="shi" onclick="toggleShop(this)"><div class="shcb"><i class="ti ti-check" aria-hidden="true"></i></div><span class="shitext">Manzanas</span><span class="shq">x5</span></div>
+      <div class="shcat" style="border-top:0.5px solid var(--br)"><i class="ti ti-meat" style="font-size:13px" aria-hidden="true"></i>Proteinas</div>
+      <div class="shi" onclick="toggleShop(this)"><div class="shcb"><i class="ti ti-check" aria-hidden="true"></i></div><span class="shitext">Pechuga de pollo</span><span class="shq">800 g</span></div>
+      <div class="shi" onclick="toggleShop(this)"><div class="shcb"><i class="ti ti-check" aria-hidden="true"></i></div><span class="shitext">Huevos</span><span class="shq">x12</span></div>
+      <div class="shcat" style="border-top:0.5px solid var(--br)"><i class="ti ti-box" style="font-size:13px" aria-hidden="true"></i>Despensa</div>
+      <div class="shi" onclick="toggleShop(this)"><div class="shcb"><i class="ti ti-check" aria-hidden="true"></i></div><span class="shitext">Avena integral</span><span class="shq">500 g</span></div>
+      <div class="shi" onclick="toggleShop(this)"><div class="shcb"><i class="ti ti-check" aria-hidden="true"></i></div><span class="shitext">Arroz integral</span><span class="shq">1 kg</span></div>
+      <div class="shi" onclick="toggleShop(this)"><div class="shcb"><i class="ti ti-check" aria-hidden="true"></i></div><span class="shitext">Mantequilla de almendra</span><span class="shq">x1 bote</span></div>
+    </div>
+    <div style="height:8px"></div>
+  </div>
+  <div class="bnav">
+    <button class="nbtn" onclick="goTo('main')"><i class="ti ti-home" aria-hidden="true"></i>Inicio</button>
+    <button class="nbtn" onclick="goTo('commute')"><i class="ti ti-route" aria-hidden="true"></i>Viaje</button>
+    <button class="nbtn on" onclick="goTo('nutrition')"><i class="ti ti-salad" aria-hidden="true"></i>Nutricion</button>
+    <button class="nbtn" onclick="goTo('home')"><i class="ti ti-armchair" aria-hidden="true"></i>Hogar</button>
+  </div>
+</div>
+
+<div class="scr" id="s-home">
+  <div class="topbar">
+    <button class="back-btn" onclick="goTo('main')"><i class="ti ti-arrow-left" aria-hidden="true"></i>Volver</button>
+    <div class="page-title">Hogar</div>
+    <div style="width:60px"></div>
+  </div>
+  <div class="content">
+    <div class="slbl"><i class="ti ti-check" aria-hidden="true"></i>Tareas de hoy</div>
+    <div class="card">
+      <div class="tri done" onclick="toggleTask(this)">
+        <div class="tricb"><i class="ti ti-check" aria-hidden="true"></i></div>
+        <div class="tribody"><div class="triname">Revisar correo administrativo</div><div class="trihint">Completado esta manana</div></div>
+        <span class="tritag a">Admin</span>
+      </div>
+      <div class="tri" onclick="toggleTask(this)">
+        <div class="tricb"><i class="ti ti-check" aria-hidden="true"></i></div>
+        <div class="tribody"><div class="triname">Limpieza ligera salon y cocina</div><div class="trihint">Ventana ideal: 16:45 a 17:15, antes de que llegue la familia</div></div>
+        <span class="tritag h">Casa</span>
+      </div>
+      <div class="tri" onclick="toggleTask(this)">
+        <div class="tricb"><i class="ti ti-check" aria-hidden="true"></i></div>
+        <div class="tribody"><div class="triname">Preparar ropa para manana</div><div class="trihint">Antes de las 21:00. Reduce decisiones matutinas.</div></div>
+        <span class="tritag h">Casa</span>
+      </div>
+      <div class="tri" onclick="toggleTask(this)">
+        <div class="tricb"><i class="ti ti-check" aria-hidden="true"></i></div>
+        <div class="tribody"><div class="triname">Renovar seguro del coche</div><div class="trihint">Vence el 25 de mayo. 10 min de gestion online.</div></div>
+        <span class="tritag a">Admin</span>
+      </div>
+    </div>
+    <div class="slbl"><i class="ti ti-moon" aria-hidden="true"></i>Gestion del descanso</div>
+    <div class="card cp" style="margin-bottom:12px">
+      <div style="font-size:12px;color:var(--sk);font-weight:500;margin-bottom:10px">Horario de sueno optimo</div>
+      <div class="slrow">
+        <div class="slblk"><div class="slval">22:30</div><div class="sllbl">Dormir</div></div>
+        <div class="slblk"><div class="slval">06:45</div><div class="sllbl">Despertar</div></div>
+        <div class="slblk"><div class="slval">8h 15</div><div class="sllbl">Duracion</div></div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <div class="tli"><div class="tlt" style="font-size:10px">20:00</div><div class="tld sk"></div><div class="tlb"><div class="tln">Cena ligera</div><div class="tls">Evita comidas pesadas 2h antes de dormir</div></div></div>
+      <div class="tli"><div class="tlt" style="font-size:10px">20:45</div><div class="tld sg"></div><div class="tlb"><div class="tln">Rutina nocturna</div><div class="tls">Tarea ligera pendiente. Sin pantallas desde 21:30.</div></div></div>
+      <div class="tli"><div class="tlt" style="font-size:10px">21:30</div><div class="tld cl"></div><div class="tlb"><div class="tln">Estiramiento lumbar nocturno</div><div class="tls">5 min. Rodillas al pecho tumbado.</div></div></div>
+      <div class="tli"><div class="tlt" style="font-size:10px">22:30</div><div class="tld dim"></div><div class="tlb"><div class="tln">Hora de dormir</div><div class="tls">Habitacion fresca. Sin dispositivos.</div></div></div>
+    </div>
+    <div class="hcard sg">
+      <div class="htag">Recordatorio de movimiento</div>
+      <div class="htitle">Muevete cada 45 minutos</div>
+      <div class="hsub">Levantate 30 segundos. Tu lumbar lo necesita durante el trabajo sedentario.</div>
+      <button class="hbtn sg" id="mov-btn" onclick="toggleMovReminder()">Activar recordatorio</button>
+    </div>
+    <div style="height:8px"></div>
+  </div>
+  <div class="bnav">
+    <button class="nbtn" onclick="goTo('main')"><i class="ti ti-home" aria-hidden="true"></i>Inicio</button>
+    <button class="nbtn" onclick="goTo('commute')"><i class="ti ti-route" aria-hidden="true"></i>Viaje</button>
+    <button class="nbtn" onclick="goTo('nutrition')"><i class="ti ti-salad" aria-hidden="true"></i>Nutricion</button>
+    <button class="nbtn on" onclick="goTo('home')"><i class="ti ti-armchair" aria-hidden="true"></i>Hogar</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"><div class="tt" id="toast-t"></div><div class="tb" id="toast-b"></div></div>
+<div class="abanner" id="abanner">
+  <div class="ablabel">ZenFlow</div>
+  <div class="abtitle" id="ab-title"></div>
+  <div class="absub" id="ab-sub"></div>
+  <button class="abdismiss" onclick="dismissAlarm()" aria-label="Cerrar"><i class="ti ti-x" aria-hidden="true"></i></button>
+</div>
+</div>
+
+<script>
+const MONTHS=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const DAYS=['domingo','lunes','martes','miercoles','jueves','viernes','sabado'];
+
+// NAVIGATION
+function goTo(tab){
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+  const m={main:'s-main',commute:'s-commute',nutrition:'s-nutrition',home:'s-home'};
+  const el=document.getElementById(m[tab]||'s-main');
+  if(el)el.classList.add('on');
+  if(tab==='commute'&&!newsLoaded)loadNews();
+}
+
+// CLOCK
+function updateClock(){
+  const n=new Date();
+  const h=String(n.getHours()).padStart(2,'0');
+  const mi=String(n.getMinutes()).padStart(2,'0');
+  const ce=document.getElementById('clock');
+  if(ce)ce.textContent=h+':'+mi;
+  const de=document.getElementById('clock-d');
+  if(de)de.textContent=DAYS[n.getDay()]+' '+n.getDate()+' '+MONTHS[n.getMonth()];
+  const gr=document.getElementById('greeting');
+  if(gr){
+    const hr=n.getHours();
+    gr.textContent=(hr<12?'Buenos dias':hr<20?'Buenas tardes':'Buenas noches');
+  }
+}
+updateClock();
+setInterval(updateClock,1000);
+
+// ENERGY
+function setEnergy(btn,val){
+  btn.closest('.erow').querySelectorAll('.ebtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  if(val==='bajo')showToast('Dia tranquilo','Menu ajustado a energia baja');
+  if(val==='alto')showToast('Buena energia!','Menu actualizado con mas proteinas');
+}
+
+// TRAVEL
+function calcTravel(){
+  const t=document.getElementById('depart-time').value||'07:45';
+  const[h,m]=t.split(':').map(Number);
+  const mins=20+Math.floor(Math.random()*15);
+  const tot=h*60+m+mins;
+  const ah=Math.floor(tot/60)%24,am=tot%60;
+  document.getElementById('tr-min').textContent=mins;
+  document.getElementById('tr-km').textContent=(7+Math.random()*8).toFixed(1);
+  document.getElementById('tr-arr').textContent=String(ah).padStart(2,'0')+':'+String(am).padStart(2,'0');
+  document.getElementById('travel-result').style.display='block';
+  showToast('Viaje calculado','Salida '+t+' · '+mins+' min de trayecto');
+}
+
+// AUDIO ENGINE
+function playGong(type){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const f=type==='bowl'?[[432,5,.45],[432*2.756,2.5,.18],[432*5.4,1.5,.07]]:[[220,6,.5],[220*3.47,3,.2],[220*6.9,1.8,.08]];
+    f.forEach(([freq,dur,vol])=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.type='sine';o.frequency.setValueAtTime(freq,ctx.currentTime);
+      o.frequency.exponentialRampToValueAtTime(freq*.988,ctx.currentTime+dur);
+      g.gain.setValueAtTime(vol,ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+dur);
+      o.connect(g);g.connect(ctx.destination);o.start();o.stop(ctx.currentTime+dur);
+    });
+  }catch(e){}
+}
+
+function playChime(){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    [523.25,659.25,783.99].forEach((f,i)=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.type='sine';o.frequency.value=f;
+      g.gain.setValueAtTime(0,ctx.currentTime+i*.18);
+      g.gain.linearRampToValueAtTime(.25,ctx.currentTime+i*.18+.05);
+      g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+i*.18+1.5);
+      o.connect(g);g.connect(ctx.destination);
+      o.start(ctx.currentTime+i*.18);o.stop(ctx.currentTime+i*.18+1.5);
+    });
+  }catch(e){}
+}
+
+// AMBIENT DRONE
+let ambCtx=null;
+function toggleAmbient(){
+  const icon=document.getElementById('amb-icon');
+  const state=document.getElementById('amb-state');
+  if(ambCtx){
+    ambCtx.close();ambCtx=null;
+    icon.className='ti ti-player-play';
+    state.textContent='Drone ambiental sintetizado en local';
+    return;
+  }
+  try{
+    ambCtx=new(window.AudioContext||window.webkitAudioContext)();
+    const ctx=ambCtx;
+    [[110,.07],[164.81,.045],[220,.035],[293.66,.025]].forEach(([freq,vol])=>{
+      const o=ctx.createOscillator(),lfo=ctx.createOscillator(),lg=ctx.createGain(),g=ctx.createGain();
+      o.type='sine';o.frequency.value=freq;
+      lfo.frequency.value=.07+Math.random()*.04;lg.gain.value=freq*.003;
+      lfo.connect(lg);lg.connect(o.frequency);
+      g.gain.setValueAtTime(0,ctx.currentTime);g.gain.linearRampToValueAtTime(vol,ctx.currentTime+4);
+      o.connect(g);g.connect(ctx.destination);o.start();lfo.start();
+    });
+    icon.className='ti ti-player-pause';
+    state.textContent='Reproduciendo · Toca para pausar';
+  }catch(e){showToast('Audio no disponible','Activa el audio en tu navegador');}
+}
+
+// STRETCH TIMER
+let stretchActive=false,stretchInterval=null,stretchCount=30;
+function startStretch(){
+  if(stretchActive)return;
+  stretchActive=true;stretchCount=30;
+  const ring=document.getElementById('tring'),btn=document.getElementById('stretch-btn');
+  const num=document.getElementById('ring-num'),fg=document.getElementById('ring-fg');
+  const circ=2*Math.PI*38;
+  ring.style.display='block';btn.style.display='none';
+  playGong('bowl');
+  stretchInterval=setInterval(()=>{
+    stretchCount--;
+    num.textContent=stretchCount;
+    fg.style.strokeDashoffset=circ*(1-stretchCount/30);
+    if(stretchCount<=0){
+      clearInterval(stretchInterval);stretchActive=false;
+      ring.style.display='none';btn.style.display='block';
+      btn.textContent='Completado ✓';
+      playGong('gong');
+      showToast('Bien hecho','Estiramiento lumbar completado');
+      setTimeout(()=>{btn.textContent='Iniciar 30 seg';},4000);
+    }
+  },1000);
+}
+
+// ALARMS
+const alarmState={depart:true,lunch:true,night:true,sleep:true};
+const ALARMS=[
+  {id:'depart',time:'07:45',title:'Inicio del viaje',sub:'Estiramiento lumbar antes de salir',sound:'bowl'},
+  {id:'breakfast',time:'09:00',title:'Desayuno',sub:'Avena con platano. Hidratate.',sound:'chime'},
+  {id:'lunch',time:'12:30',title:'Hora de comer',sub:'Pechuga con arroz. Recuerda el agua.',sound:'bowl'},
+  {id:'snack',time:'15:45',title:'Snack de tarde',sub:'Manzana con mantequilla de almendra',sound:'chime'},
+  {id:'tasks',time:'16:45',title:'Ventana libre',sub:'Limpieza ligera, 30 minutos',sound:'chime'},
+  {id:'night',time:'20:45',title:'Rutina nocturna',sub:'Tareas ligeras. Sin pantallas pronto.',sound:'bowl'},
+  {id:'sleep',time:'22:30',title:'Hora de dormir',sub:'Habitacion fresca. Desconexion.',sound:'gong'}
+];
+
+function toggleAlarm(btn,id){
+  alarmState[id]=!alarmState[id];
+  if(alarmState[id]){btn.classList.add('on');btn.textContent='Alarma activa';showToast('Alarma activada','Te avisare a las '+ALARMS.find(a=>a.id===id)?.time);}
+  else{btn.classList.remove('on');btn.textContent='Activar alarma';showToast('Alarma desactivada','');}
+}
+
+function checkAlarms(){
+  const n=new Date();
+  const cur=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+  ALARMS.forEach(a=>{
+    if(alarmState[a.id]&&a.time===cur&&!a.fired){
+      a.fired=true;triggerAlarm(a);
+      setTimeout(()=>{a.fired=false;},70000);
+    }
+  });
+}
+setInterval(checkAlarms,15000);
+
+function triggerAlarm(a){
+  if(a.sound==='chime')playChime();else playGong(a.sound);
+  if(typeof Notification!=='undefined'&&Notification.permission==='granted'){
+    try{new Notification('ZenFlow: '+a.title,{body:a.sub});}catch(e){}
+  }
+  document.getElementById('ab-title').textContent=a.title;
+  document.getElementById('ab-sub').textContent=a.sub;
+  document.getElementById('abanner').classList.add('on');
+  setTimeout(dismissAlarm,8000);
+}
+function dismissAlarm(){document.getElementById('abanner').classList.remove('on');}
+
+if(typeof Notification!=='undefined'&&Notification.permission==='default'){
+  setTimeout(()=>Notification.requestPermission(),2500);
+}
+
+// TASKS
+function toggleTask(row){
+  row.classList.toggle('done');
+  if(row.classList.contains('done')){playChime();showToast('Tarea completada','Una menos. Vas muy bien.');}
+}
+
+// SHOP
+function toggleShop(item){item.classList.toggle('done');}
+
+// PODCASTS
+function openPod(url){
+  if(typeof openLink==='function')openLink(url);
+  else{try{window.open(url,'_blank');}catch(e){}}
+}
+
+// MOVEMENT REMINDER
+let movActive=false,movInterval=null;
+function toggleMovReminder(){
+  const btn=document.getElementById('mov-btn');
+  movActive=!movActive;
+  if(movActive){
+    btn.textContent='Desactivar recordatorio';
+    movInterval=setInterval(()=>{
+      playChime();
+      document.getElementById('ab-title').textContent='Momento de moverte';
+      document.getElementById('ab-sub').textContent='Solo 30 segundos. Tu lumbar te lo agradece.';
+      document.getElementById('abanner').classList.add('on');
+      setTimeout(dismissAlarm,6000);
+    },45*60*1000);
+    showToast('Recordatorio activado','Cada 45 minutos durante el trabajo');
+  }else{
+    clearInterval(movInterval);btn.textContent='Activar recordatorio';
+    showToast('Recordatorio desactivado','');
+  }
+}
+
+// TOAST
+let toastT;
+function showToast(title,body){
+  document.getElementById('toast-t').textContent=title;
+  document.getElementById('toast-b').textContent=body;
+  const t=document.getElementById('toast');
+  t.classList.add('on');clearTimeout(toastT);
+  toastT=setTimeout(()=>t.classList.remove('on'),3200);
+}
+
+// NEWS (Anthropic API + web_search)
+let newsLoaded=false;
+async function loadNews(){
+  newsLoaded=true;
+  const c=document.getElementById('news-container');
+  c.innerHTML='<div class="loading"><div class="spin"></div>Buscando noticias...</div>';
+  try{
+    const n=new Date();
+    const ds=n.getDate()+' de '+MONTHS[n.getMonth()]+' de '+n.getFullYear();
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        tools:[{type:'web_search_20250305',name:'web_search'}],
+        messages:[{role:'user',content:'Busca las 4 noticias mas importantes de Espana de hoy '+ds+'. Responde SOLO con un JSON array valido sin markdown. Cada objeto: {"titulo":"maximo 8 palabras","resumen":"maximo 18 palabras","categoria":"politica o economia o sociedad o deporte o cultura"}'}]
+      })
+    });
+    const data=await res.json();
+    const text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    const m=text.match(/\[\s*\{[\s\S]*?\}\s*\]/);
+    if(m){renderNews(JSON.parse(m[0]));}
+    else throw new Error('parse');
+  }catch(e){
+    document.getElementById('news-container').innerHTML=`<div style="padding:16px;font-size:12px;color:var(--t2);text-align:center"><i class="ti ti-wifi-off" style="font-size:22px;display:block;margin-bottom:8px;color:var(--t3)" aria-hidden="true"></i>No se pudieron cargar las noticias<br><button onclick="newsLoaded=false;loadNews()" style="margin-top:10px;background:none;border:0.5px solid var(--brh);border-radius:8px;padding:6px 14px;color:var(--t2);cursor:pointer;font-family:inherit;font-size:12px">Reintentar</button></div>`;
+  }
+}
+
+function renderNews(items){
+  const html=items.map(n=>`<div class="nwi"><div class="nwcat ${n.categoria||'sociedad'}">${(n.categoria||'Sociedad')}</div><div class="nwtit">${n.titulo||''}</div><div class="nwsum">${n.resumen||''}</div></div>`).join('');
+  document.getElementById('news-container').innerHTML=`<div>${html}</div>`;
+}
+
+// ======= REGISTRO DE SERVICE WORKER PARA LA PWA =======
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('Service Worker activo con éxito', reg.scope))
+      .catch(err => console.error('Error registrando Service Worker', err));
+  });
+}
+</script>
+</body>
+</html>
